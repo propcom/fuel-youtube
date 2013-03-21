@@ -35,14 +35,14 @@ class Feeds
 				$videos[] = array(
 					'title'       => (string) $media->group->title,
 					'description' => (string) $media->group->description,
-					'url'         => (string) $media->group->player->attributes()->url,
+					'url'         => (string) \Uri::create($media->group->player->attributes()->url, array(), array(), true),
 					'author'      => (string) $entry->author->name,
-					'author_url'  => (string) $entry->author->uri,
+					'author_url'  => (string) \Uri::create($entry->author->uri, array(), array(), true),
 					'thumbnails'  => array(
-						(string) $media->group->thumbnail[0]->attributes()->url,
-						(string) $media->group->thumbnail[1]->attributes()->url,
-						(string) $media->group->thumbnail[2]->attributes()->url,
-						(string) $media->group->thumbnail[3]->attributes()->url,
+						(string) \Uri::create($media->group->thumbnail[0]->attributes()->url, array(), array(), true),
+						(string) \Uri::create($media->group->thumbnail[1]->attributes()->url, array(), array(), true),
+						(string) \Uri::create($media->group->thumbnail[2]->attributes()->url, array(), array(), true),
+						(string) \Uri::create($media->group->thumbnail[3]->attributes()->url, array(), array(), true),
 					),
 				);
 			}
