@@ -10,16 +10,22 @@ class User
 
     protected function __construct($un)
     {
-        $this->user = $un;
-    }
+       \Config::load('youtube',true);
+        if($un){
+		$this->user = $un;
+		}else{
+			$user =\Config::get('youtube.user');
+		}
+	}
 
     public static function forge($un)
     {
         return new static($un);
     }
     public function videos($params = array()){
-        $default_params = array(
-            'max-results' => 5,
+
+		$default_params = array(
+            'max-results' => \Config::get('youtube.feed.length',5),
         );
         $params = array_merge($default_params, $params);
 
