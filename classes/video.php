@@ -145,15 +145,31 @@ class Video
     }
 
     public function embed($params = array()){
-		\Config::load('youtube',true);
-		$height = \Config::get('youtube.embed.height');
-		$width = \Config::get('youtube.embed.width');
-		if(isset($params['height'])){
+        if(isset($params['height'])){
             $height = $params['height'];
+            unset($params['height']);
+        }else{
+            $height = 315;
         }
         if(isset($params['width'])){
             $width = $params['width'];
+            unset($params['width']);
+        }else{
+            $width = 560;
         }
-        return "<iframe width=\"$width\" height=\"$height\" src=\"http://www.youtube.com/embed/$this->id\" frameborder=\"0\" allowfullscreen></iframe>";
+        if(!isset($params['wmode'])){
+            $params['wmode'] = 'transparent';
+        }
+        $string = "";
+        foreach($params as $k => $p){
+            if($string == ""){
+                $string .= "?";
+            }else{
+                $string .= "&";
+            }
+            $string .= $k .'='. $p;
+        }
+        $string = $this->id.$string;
+        return "<iframe width=\"$width\" height=\"$height\" src=\"http://www.youtube.com/embed/$string\" frameborder=\"0\" allowfullscreen></iframe>";
     }
 }
