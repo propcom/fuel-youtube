@@ -37,7 +37,7 @@ class Video
             'title' => $d['title'],
             'content' => $d['content'],
             'link' => array(
-                'mobile' => $d['link'][3]['attributes']['href'],
+                'mobile' => (isset($d['link'][3]['attributes']['href'])?$d['link'][3]['attributes']['href']:''),
                 'desktop' => $d['link'][0]['attributes']['href']
             ),
             'author' => array(
@@ -109,7 +109,7 @@ class Video
             'title' => $r['title'],
             'content' => (is_string($r['content'])?$r['content']:""),
             'link' => array(
-                'mobile' => $r['link'][4]['attributes']['href'],
+                'mobile' => (isset($r['link'][4]['attributes']['href'])?$r['link'][4]['attributes']['href']:''),
                 'desktop' => $r['link'][1]['attributes']['href']
             ),
             'author' => array(
@@ -132,7 +132,7 @@ class Video
             'content' => (is_string($r['content'])?$r['content']:""),
             'category' => $r['category'][1]['attributes']['label'],
             'link' => array(
-                'mobile' => $r['link'][3]['attributes']['href'],
+                'mobile' => (isset($r['link'][3]['attributes']['href'])?$r['link'][3]['attributes']['href']:''),
                 'desktop' => $r['link'][0]['attributes']['href']
             ),
             'author' => array(

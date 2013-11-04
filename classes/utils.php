@@ -10,7 +10,7 @@ class Utils
         try{
             $xml = simplexml_load_file($url);
             return self::xml2array($xml);
-        }catch(Exception $e){
+        }catch(\Exception $e){
             \Log::error($e->getMessage(), __METHOD__);
             return false;
         }
