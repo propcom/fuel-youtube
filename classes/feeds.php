@@ -21,8 +21,14 @@ class Feeds
 
 		$params = array_merge($default_params, $params);
 
-		$url = 'http://gdata.youtube.com/feeds/api/users/'.$user.'/uploads?';
-		$url .= http_build_query($params);
+		$url = 'http://gdata.youtube.com/feeds/api/users/'.$user.'/uploads';
+		// The parameters will generate a feed from YouTube's search index, effectively
+		// restricting the result set to indexed, public videos, rather than returning
+		// a complete list of the user's uploaded videos.
+		// https://developers.google.com/youtube/2.0/developers_guide_protocol_video_feeds#User_Uploaded_Videos
+		if (count($params) > 1) {
+			$url .= '?' . http_build_query($params);
+		}
 
 		$videos = array();
 
@@ -44,7 +50,11 @@ class Feeds
 						(string) \Uri::create($media->group->thumbnail[2]->attributes()->url, array(), array(), true),
 						(string) \Uri::create($media->group->thumbnail[3]->attributes()->url, array(), array(), true),
 					),
+					'published' => (string) $entry->published,
 				);
+				if (count($videos) >= $params['max-results']) {
+					break;
+				}
 			}
 		} catch (\Exception $e) {
 			\Log::error($e->getMessage(), __METHOD__);
