@@ -1,6 +1,7 @@
 <?php
 
 return [
+	'api_key' => null,
 	'user' => null,
 	'embed' => [
 		'width' => 758,
@@ -9,5 +10,4 @@ return [
 	'feed' => [
 		'length' => 10
 	]
-
 ];

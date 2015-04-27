@@ -62,4 +62,16 @@ class Feeds
 
 		return $videos;
 	}
+
+	/**
+	 * @param void
+	 * @return object
+	 */
+	protected static function _get_service()
+	{
+		$client = new \Google_Client();
+		$client->setDeveloperKey(\Config::get('youtube.api_key'));
+		return new \Google_Service_YouTube($client);
+	}
+
 }
