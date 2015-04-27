@@ -74,4 +74,43 @@ class Feeds
 		return new \Google_Service_YouTube($client);
 	}
 
+	/**
+	 * @param string $list_id Youtube's list id
+	 * @return array Videos
+	 */
+	public static function get_playlist_videos($list_id)
+	{
+		$youtube = static::_get_service();
+		$videos = [];
+		try {
+			$playlistItems = $youtube->playlistItems->listPlaylistItems(
+				'snippet',
+				[
+					'playlistId' => $list_id,
+					'maxResults' => \Config::get('youtube.feed.length', 10),
+				]
+			);
+			foreach ($playlistItems['items'] as $item) {
+				$video = [
+					'id' => $item['snippet']['resourceId']['videoId'],
+					'title' => $item['snippet']['title'],
+					'description' => $item['snippet']['description'],
+					'url' => 'https://www.youtube.com/watch?v=' . $item['snippet']['resourceId']['videoId'],
+					'author' => $item['snippet']['channelTitle'],
+					'author_url' => 'https://www.youtube.com/channel/' . $item['snippet']['channelId'],
+				];
+				foreach (['Default', 'High', 'Maxres', 'Medium'] as $size) {
+					if ($thumbnail = $item['snippet']->getThumbnails()->{"get$size"}()) {
+						$video['thumbnails'][] = $thumbnail->getUrl();
+					}
+				}
+				$videos[] = $video;
+			}
+		}
+		catch (\Exception $e) {
+			\Log::error($e->getMessage(), __METHOD__);
+		}
+		return $videos;
+	}
+
 }
