@@ -1,12 +1,40 @@
-# YouTube package for FuelPHP
+# YouTube package for FuelPHP #
 
+## Instalation ##
 
-## Usage
+### Install this package ###
+
+### Install Google APIs Client Library ###
+
+Add to composer.json
+```php
+"require": {
+  "google/apiclient": "1.1.*"
+}
+```
+
+and update packages:
+```sh
+composer install
+```
+
+### Configure ###
+
+Example *youtube.php*:
+```php
+<?php
+return [
+	'api_key' => '<your_api_key>',
+];
+```
+- **api_key** Google Developers API key. If OAuth token is not provided, this key must be set
+
+## Usage ##
 
 At the moment this package is only able to pull out the latest videos uploaded by a user.
 
 
-### Controller
+### Controller ###
 
     <?php
     
@@ -19,7 +47,7 @@ At the moment this package is only able to pull out the latest videos uploaded b
     $videos = \Youtube\Feeds::get_videos($params);
 
 
-### View
+### View ###
 
     <?php if ($videos): ?>
     	<div class="js_youtube_videos">
@@ -37,6 +65,6 @@ At the moment this package is only able to pull out the latest videos uploaded b
     <?php endif; ?>
 
 
-## YouTube Documentation
+## YouTube Documentation ##
 
 https://developers.google.com/youtube/
