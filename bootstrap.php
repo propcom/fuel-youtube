@@ -7,4 +7,5 @@ Autoloader::add_classes(array(
 	'Youtube\Video' => __DIR__.'/classes/video.php',
 	'Youtube\User' => __DIR__.'/classes/user.php',
 	'Youtube\Utils' => __DIR__.'/classes/utils.php',
+	'Youtube\Youtube' => __DIR__.'/classes/youtube.php',
 ));
