@@ -4,19 +4,69 @@ namespace Youtube;
 
 use Oil\Exception;
 
-class Video
+class Video extends Youtube
 {
-    protected $id;
+	protected $channel_id;
+	protected $channel_title;
+	protected $title;
+	protected $description;
+	protected $published;
+	protected $thumbnails = [
+		'Default' => null,
+		'High' => null,
+		'Maxres' => null,
+		'Medium' => null,
+	];
 
-    protected function __construct($id)
-    {
-        $this->id = $id;
-    }
+	/**
+	 * @param object $source Google_Service_YouTube_PlaylistItem
+	 * @param object
+	 */
+	public function from_source($source)
+	{
+		$this->id = $source['snippet']['resourceId']['videoId'];
+		$this->channel_id = $source['snippet']['channelId'];
+		$this->channel_title = $source['snippet']['channelTitle'];
+		$this->title = $source['snippet']['title'];
+		$this->description = $source['snippet']['description'];
+		$this->published = $source['snippet']['publishedAt'];
+		foreach ($this->thumbnails as $size => $value) {
+			if ($thumbnail = $source['snippet']->getThumbnails()->{"get$size"}()) {
+				$this->thumbnails[$size] = $thumbnail->getUrl();
+			}
+		}
+		return $this;
+	}
 
-    public static function forge($id)
-    {
-        return new static($id);
-    }
+	public function get_author()
+	{
+		return $this->channel_title;
+	}
+
+	public function get_author_url()
+	{
+		return 'https://www.youtube.com/channel/' . $this->channel_id;
+	}
+
+	public function get_thumbnail($size = 'Default')
+	{
+		return $this->thumbnails[$size];
+	}
+	public function get_title()
+	{
+		return $this->title;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function embed(array $params = array())
+	{
+		$height = \Arr::get($params, 'height', \Config::get('youtube.embed.height'));
+		$width = \Arr::get($params, 'width', \Config::get('youtube.embed.width'));
+		return "<iframe width=\"$width\" height=\"$height\" src=\"http://www.youtube.com/embed/$this->id\" frameborder=\"0\" allowfullscreen></iframe>";
+	}
+
     public function data(){
         return array(
             'details'=>$this->details(),
@@ -27,6 +77,48 @@ class Video
         );
     }
     public function details(){
+
+		// -------------------------------------------------
+
+		if ( ! \Config::get('youtube.api_key')) {
+			throw new \Exception('API key not provided.');
+		}
+		$client = new \Google_Client();
+		$client->setDeveloperKey(\Config::get('youtube.api_key'));
+		$youtube = new \Google_Service_YouTube($client);
+
+		$playlistItems = $youtube->videos->listVideos(
+			'snippet',
+			[
+				'id' => $this->id,
+			]
+		);
+
+		foreach ($playlistItems as $item) {
+			$video = [
+				'id' => $this->id,
+				'published' => $item['snippet']['publishedAt'],
+				'updated' => null, //$d['updated'],
+				'category' => null, //$d['category'][1]['attributes']['label'],
+				'title' => $item['snippet']['title'],
+				'content' => $item['snippet']['description'],
+				'link' => [
+					'mobile' => null, //(isset($d['link'][3]['attributes']['href'])?$d['link'][3]['attributes']['href']:''),
+					'desktop' => null, //$d['link'][0]['attributes']['href']
+				],
+				'author' => [
+					'name' => null, //$d['author']['name'],
+					'link' => null, //$d['author']['uri']
+				],
+			];
+			return $video;
+		}
+
+		// -------------------------------------------------
+
+
+
+
         $url = "http://gdata.youtube.com/feeds/api/videos/".$this->id;
         $d = Utils::request($url);
         $data = array(
@@ -144,16 +236,4 @@ class Video
         return $rel;
     }
 
-    public function embed($params = array()){
-		\Config::load('youtube',true);
-		$height = \Config::get('youtube.embed.height');
-		$width = \Config::get('youtube.embed.width');
-		if(isset($params['height'])){
-            $height = $params['height'];
-        }
-        if(isset($params['width'])){
-            $width = $params['width'];
-        }
-        return "<iframe width=\"$width\" height=\"$height\" src=\"http://www.youtube.com/embed/$this->id\" frameborder=\"0\" allowfullscreen></iframe>";
-    }
 }
