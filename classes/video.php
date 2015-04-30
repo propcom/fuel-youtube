@@ -18,6 +18,7 @@ class Video extends Youtube
 		'Medium' => null,
 	];
 
+
 	/**
 	 * @param object $source Google_Service_YouTube_PlaylistItem
 	 * @param object
@@ -38,26 +39,43 @@ class Video extends Youtube
 		return $this;
 	}
 
+
 	public function get_author()
 	{
 		return $this->channel_title;
 	}
+
 
 	public function get_author_url()
 	{
 		return 'https://www.youtube.com/channel/' . $this->channel_id;
 	}
 
+
 	public function get_thumbnail($size = 'Default')
 	{
 		return $this->thumbnails[$size];
 	}
+
+
 	public function get_title()
 	{
 		return $this->title;
 	}
 
+
 	/**
+	 * @param void
+	 * @return string
+	 */
+	public function get_url()
+	{
+		return 'https://www.youtube.com/watch?v='.$this->id;
+	}
+
+
+	/**
+	 * @param array $params
 	 * @return string
 	 */
 	public function embed(array $params = array())
