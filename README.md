@@ -2,9 +2,10 @@
 
 ## Instalation ##
 
-### Install this package ###
-
-### Install Google APIs Client Library ###
+Go to your version in the command line and type
+```sh
+$ install-package propcom/fuel-youtube
+```
 
 Add to composer.json
 ```php
@@ -15,55 +16,50 @@ Add to composer.json
 
 and update packages:
 ```sh
-composer install
+$ composer update
 ```
 
 ### Configure ###
 
-Example *youtube.php*:
+Example *fuel/app/youtube.php*:
 ```php
 <?php
+
 return [
 	'api_key' => '<your_api_key>',
+	'user' => '<your_youtube_username>',
 ];
 ```
-- **api_key** Google Developers API key. If OAuth token is not provided, this key must be set
+- **api_key** Google Developers API key. Required.
+- **user** Youtube username
 
 ## Usage ##
 
-At the moment this package is only able to pull out the latest videos uploaded by a user.
-
-
-### Controller ###
-
-    <?php
-    
-    \Package::load('youtube');
-    
-    $params = array(
-    	'max-results' => 5,
-    );
-    
-    $videos = \Youtube\Feeds::get_videos($params);
-
+Get latest uploads
+```php
+\Package::load('youtube');
+$user = \Youtube\User::forge(\Config::get('youtube.user'));
+$videos = $user->videos(['max_results' => 5]);
+```
 
 ### View ###
 
-    <?php if ($videos): ?>
-    	<div class="js_youtube_videos">
-    		<?php foreach ($videos as $video): ?>
-    			<div class="js_youtube_video">
-    				<a href="<?= $video['url'] ?>" class="two columns mt50 ml80"><img src="<?= $video['thumbnails'][1] ?>" width="120" height="90" alt="<?= $video['title'] ?>"></a>
-    				<div class="three columns mt50 omega">
-    					<h6 class="red"><a href="<?= $video['url'] ?>"><?= $video['title'] ?></a></h6>
-    					<p><a href="<?= $video['url'] ?>"><?= $video['description'] ?></a></p>
-    					<p><a href="<?= $video['author_url'] ?>">Our Youtube Channel</a></p>
-    				</div>
-    			</div>
-    		<?php endforeach; ?>
-    	</div>
-    <?php endif; ?>
-
+```php
+<?php if ($videos): ?>
+    <div class="js_youtube_videos">
+        <?php foreach ($videos as $video): ?>
+            <div class="js_youtube_video">
+                <a href="<?= $video->get_url() ?>" class="two columns mt50 ml80"><img src="<?= $video['thumbnails'][1] ?>" width="120" height="90" alt="<?= $video->get_title() ?>"></a>
+                <div class="three columns mt50 omega">
+                    <h6 class="red"><a href="<?= $video->get_url() ?>"><?= $video->get_title() ?></a></h6>
+                    <p><a href="<?= $video->get_url() ?>"><?= $video->get_description() ?></a></p>
+                    <p><a href="<?= $video->get_author_url() ?>"><?= $video->get_author() ?></a></p>
+                </div>
+            </div>
+        <?php endforeach; ?>
+    </div>
+<?php endif; ?>
+```
 
 ## YouTube Documentation ##
 
