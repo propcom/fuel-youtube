@@ -34,17 +34,28 @@ class User
 	public function videos(array $params = [])
 	{
 		// get channel associated with Youtube username
-		$response = \Youtube\Youtube::service()->channels->listChannels(
-			'snippet, contentDetails',
-			[
-				'forUsername' => $this->user,
-			]
-		);
+		try {
+			$response = \Cache::get('youtube_user_'.$this->user.'_channels');
+		}
+		catch (\CacheNotFoundException $e) {
+			$response = \Youtube\Youtube::service()->channels->listChannels(
+				'snippet, contentDetails',
+				[
+					'forUsername' => $this->user,
+				]
+			);
+			\Cache::set(
+				'youtube_user_'.$this->user.'_channels',
+				$response,
+				\Config::get('youtube.cache_expiration', 300)
+			);
+		}
 
 		foreach ($response['items'] as $item) {
-			$uploads = $item['contentDetails']['relatedPlaylists']['uploads'];
-			$playlist = \Youtube\Playlist::forge($uploads);
-			return $playlist->get_videos($params);
+			if ($uploads = \Arr::get($item,'contentDetails.relatedPlaylists.uploads')) {
+				$playlist = \Youtube\Playlist::forge($uploads);
+				return $playlist->get_videos($params);
+			}
 		}
 
 		return [];

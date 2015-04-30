@@ -67,7 +67,9 @@ class Video extends Youtube
 		return "<iframe width=\"$width\" height=\"$height\" src=\"http://www.youtube.com/embed/$this->id\" frameborder=\"0\" allowfullscreen></iframe>";
 	}
 
-    public function data(){
+
+	public function data()
+	{
         return array(
             'details'=>$this->details(),
             'related'=>$this->get('related'),
@@ -76,7 +78,10 @@ class Video extends Youtube
             'embed'=>$this->embed()
         );
     }
-    public function details(){
+
+
+	public function details()
+	{
 
 		// -------------------------------------------------
 

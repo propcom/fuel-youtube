@@ -33,7 +33,7 @@ abstract class Youtube
 	 */
 	public abstract function from_source($source);
 
-	public function service()
+	public static function service()
 	{
 		if ( ! static::$service) {
 			if ( ! \Config::get('youtube.api_key')) {
