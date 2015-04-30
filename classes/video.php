@@ -6,6 +6,7 @@ use Oil\Exception;
 
 class Video extends Youtube
 {
+
 	protected $channel_id;
 	protected $channel_title;
 	protected $title;
@@ -49,6 +50,18 @@ class Video extends Youtube
 	public function get_author_url()
 	{
 		return 'https://www.youtube.com/channel/' . $this->channel_id;
+	}
+
+
+	public function get_description()
+	{
+		return $this->description;
+	}
+
+
+	public function get_published()
+	{
+		return $this->published;
 	}
 
 
@@ -97,6 +110,8 @@ class Video extends Youtube
         );
     }
 
+
+	// not supporting v3 -----------------------------------
 
 	public function details()
 	{
