@@ -78,7 +78,6 @@ class Video extends Youtube
 		}
 		$this->id = $resource['videoId'];
 		$this->channel_id = $snippet['channelId'];
-		$this->channel_id = $snippet['channelId'];
 		$this->channel_title = $snippet['channelTitle'];
 		$this->title = $snippet['title'];
 		$this->description = $snippet['description'];
