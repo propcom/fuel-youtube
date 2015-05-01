@@ -53,7 +53,7 @@ class Video extends Youtube
 	public static function forge($id)
 	{
 		if (is_object($id)) {
-			$object = new static($id->id);
+			$object = new static('');
 			if ($snippet = $id->getSnippet()) {
 				$object->_from_snippet($snippet);
 			}
@@ -71,6 +71,13 @@ class Video extends Youtube
 	 */
 	protected function _from_snippet($snippet)
 	{
+		if ( ! $resource = $snippet->getResourceId()
+			or 'youtube#video' != $resource['kind']
+		) {
+			throw new \InvalidArgumentException('Incorrect resource type');
+		}
+		$this->id = $resource['videoId'];
+		$this->channel_id = $snippet['channelId'];
 		$this->channel_id = $snippet['channelId'];
 		$this->channel_title = $snippet['channelTitle'];
 		$this->title = $snippet['title'];
