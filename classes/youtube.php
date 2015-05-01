@@ -11,12 +11,9 @@ abstract class Youtube implements \ArrayAccess, \Iterator
 
 	protected function __construct($id)
 	{
-		if (is_object($id)) {
-			$this->from_source($id);
-		} else {
-			$this->id = $id;
-		}
+		$this->id = $id;
 	}
+
 
 	/**
 	 * @param mixed $id
@@ -27,11 +24,6 @@ abstract class Youtube implements \ArrayAccess, \Iterator
 		return new static($id);
 	}
 
-	/**
-	 * Populate object using API source data
-	 * @param object $source
-	 */
-	public abstract function from_source($source);
 
 	public static function service()
 	{

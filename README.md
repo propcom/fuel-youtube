@@ -64,3 +64,5 @@ $videos = $user->videos(['max_results' => 5]);
 ## YouTube Documentation ##
 
 https://developers.google.com/youtube/
+
+https://github.com/google/google-api-php-client

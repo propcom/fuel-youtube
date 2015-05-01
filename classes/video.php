@@ -14,26 +14,70 @@ class Video extends Youtube
 	protected $published;
 	protected $thumbnails = [
 		'Default' => null,
-		'High' => null,
-		'Maxres' => null,
 		'Medium' => null,
+		'High' => null,
+		'Standard' => null,
+		'Maxres' => null,
 	];
 
 
-	/**
-	 * @param object $source Google_Service_YouTube_PlaylistItem
-	 * @param object
-	 */
-	public function from_source($source)
+	public static function find_by_id($id)
 	{
-		$this->id = $source['snippet']['resourceId']['videoId'];
-		$this->channel_id = $source['snippet']['channelId'];
-		$this->channel_title = $source['snippet']['channelTitle'];
-		$this->title = $source['snippet']['title'];
-		$this->description = $source['snippet']['description'];
-		$this->published = $source['snippet']['publishedAt'];
+		$id = (string) $id;
+		try {
+			$response = \Cache::get('youtube_videos_'.$id);
+		}
+		catch (\CacheNotFoundException $e) {
+			$response = static::service()->videos->listVideos(
+				'snippet, status',
+				[
+					'id' => $id,
+					'maxResults' => 1,
+				]
+			);
+			\Cache::set(
+				'youtube_videos_'.$id,
+				$response,
+				\Config::get('youtube.cache_expiration', 300)
+			);
+		}
+
+		foreach (\Arr::get($response, 'items', []) as $item) {
+			return static::forge($item);
+		}
+
+		return null;
+	}
+
+
+	public static function forge($id)
+	{
+		if (is_object($id)) {
+			$object = new static($id->id);
+			if ($snippet = $id->getSnippet()) {
+				$object->_from_snippet($snippet);
+			}
+		} else {
+			$object = new static($id);
+		}
+		return $object;
+	}
+
+
+	/**
+	 * @param object $snippet Instance of Google_Service_YouTube_VideoSnippet
+	 *                        or Google_Service_YouTube_PlaylistItemSnippet
+	 * @return object
+	 */
+	protected function _from_snippet($snippet)
+	{
+		$this->channel_id = $snippet['channelId'];
+		$this->channel_title = $snippet['channelTitle'];
+		$this->title = $snippet['title'];
+		$this->description = $snippet['description'];
+		$this->published = $snippet['publishedAt'];
 		foreach ($this->thumbnails as $size => $value) {
-			if ($thumbnail = $source['snippet']->getThumbnails()->{"get$size"}()) {
+			if ($thumbnail = $snippet->getThumbnails()->{"get$size"}()) {
 				$this->thumbnails[$size] = $thumbnail->getUrl();
 			}
 		}

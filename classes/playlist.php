@@ -5,9 +5,6 @@ namespace Youtube;
 class Playlist extends Youtube
 {
 
-	public function from_source($source) {}
-
-
 	/**
 	 * @param array $params
 	 * @return array Videos
@@ -18,7 +15,6 @@ class Playlist extends Youtube
 			$response = \Cache::get('youtube_playlist_'.$this->id.'_videos');
 		}
 		catch (\CacheNotFoundException $e) {
-			\Log::debug('fetch videos', __METHOD__.':'.__LINE__);
 			$response = static::service()->playlistItems->listPlaylistItems(
 				'snippet',
 				[

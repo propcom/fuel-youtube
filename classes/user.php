@@ -51,6 +51,10 @@ class User
 			);
 		}
 
+		if ( ! $response['items']) {
+			\Log::error("Unable to find channels associated with user '{$this->user}'", __METHOD__);
+		}
+
 		foreach ($response['items'] as $item) {
 			if ($uploads = \Arr::get($item,'contentDetails.relatedPlaylists.uploads')) {
 				$playlist = \Youtube\Playlist::forge($uploads);
