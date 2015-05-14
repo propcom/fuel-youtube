@@ -10,7 +10,7 @@ class User
 
 	protected function __construct($un)
 	{
-	\Config::load('youtube',true);
+		\Config::load('youtube',true);
 		if($un){
 		$this->user = $un;
 		}else{
