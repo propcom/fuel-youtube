@@ -5,13 +5,13 @@ namespace Youtube;
 class User
 {
 
-    protected $user;
+	protected $user;
 
 
-    protected function __construct($un)
-    {
-       \Config::load('youtube',true);
-        if($un){
+	protected function __construct($un)
+	{
+	\Config::load('youtube',true);
+		if($un){
 		$this->user = $un;
 		}else{
 			$user =\Config::get('youtube.user');
@@ -19,10 +19,10 @@ class User
 	}
 
 
-    public static function forge($un)
-    {
-        return new static($un);
-    }
+	public static function forge($un)
+	{
+		return new static($un);
+	}
 
 
 	/**
