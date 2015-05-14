@@ -15,18 +15,24 @@ class Playlist extends Youtube
 			$response = \Cache::get('youtube_playlist_'.$this->id.'_videos');
 		}
 		catch (\CacheNotFoundException $e) {
-			$response = static::service()->playlistItems->listPlaylistItems(
-				'snippet',
-				[
-					'playlistId' => $this->id,
-					'maxResults' => 50,
-				]
-			);
-			\Cache::set(
-				'youtube_playlist_'.$this->id.'_videos',
-				$response,
-				\Config::get('youtube.cache_expiration', 300)
-			);
+			try {
+				$response = static::service()->playlistItems->listPlaylistItems(
+					'snippet',
+					[
+						'playlistId' => $this->id,
+						'maxResults' => 50,
+					]
+				);
+				\Cache::set(
+					'youtube_playlist_'.$this->id.'_videos',
+					$response,
+					\Config::get('youtube.cache_expiration', 300)
+				);
+			}
+			catch (\Google_Service_Exception $e) {
+				\Log::error('Google error: '.$e, __METHOD__);
+				return [];
+			}
 		}
 
 		$videos = [];
